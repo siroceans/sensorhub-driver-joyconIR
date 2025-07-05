@@ -18,6 +18,7 @@ dependencies {
   implementation 'org.sensorhub:sensorhub-webui-core:' + oshCoreVersion
   implementation 'org.sensorhub:sensorhub-service-consys:' + oshCoreVersion
   implementation project(':sensorhub-driver-template')
+  implementation project(':sensorhub-driver-joyconIR')
 
 //  implementation project(':[storage-module-name]')
 //  implementation project(':[service-name]')
