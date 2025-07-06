@@ -53,7 +53,7 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
     private int resGet = 0;
 
     @Override
-    public void doInit() throws SensorHubException, InterruptedException {
+    public void doInit() throws SensorHubException{
         super.doInit();
 
         // Joy Con constructor logic.
@@ -66,14 +66,18 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
         setResolution(videoResolution);
 
         // Joy Con Initialization Sequence
-        silenceInputReport();
-        setLedBusy();
-        getSn((byte) 0x60, (byte) 0x01, 0x0F);
-        getDeviceInfo();
-        getBattery();
-        getTemperature();
-        getSpiData((byte) 0x60, (byte) 0x50, 12);
-        sendRumble();
+        try {
+            silenceInputReport();
+            setLedBusy();
+            getSn((byte) 0x60, (byte) 0x01, 0x0F);
+            getDeviceInfo();
+            getBattery();
+            getTemperature();
+            getSpiData((byte) 0x60, (byte) 0x50, 12);
+            sendRumble();
+        } catch (InterruptedException ie){
+            System.err.println("Interrupted Exception Error: " + ie);
+        }
 
         // Generate identifiers
         generateUniqueID(UID_PREFIX, config.serialNumber);
@@ -86,27 +90,37 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
     }
 
     @Override
-    public void doStart() throws SensorHubException, IOException, InterruptedException {
+    public void doStart() throws SensorHubException{
         super.doStart();
 
         // Procedure before processing images! (9 steps)
-        step0();
-        step1();
-        step2();
-        step3();
-        step4();
-        step5();
-        step6();
-        step7();
-        step8();
+        try {
+            step0();
+            step1();
+            step2();
+            step3();
+            step4();
+            step5();
+            step6();
+            step7();
+            step8();
+        } catch (IOException io) {
+            System.err.println("IO Exception: " + io);
+        } catch (InterruptedException ie) {
+            System.err.println("Interrupt Exception: " + ie);
+        }
 
         startProcessing();
     }
 
     @Override
-    public void doStop() throws SensorHubException, IOException {
+    public void doStop() throws SensorHubException{
         super.doStop();
-        stopProcessing();
+        try {
+            stopProcessing();
+        } catch (IOException io) {
+            System.err.println("IO Exception: " + io);
+        }
     }
 
     @Override
