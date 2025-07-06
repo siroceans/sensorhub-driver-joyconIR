@@ -69,3 +69,6 @@ processProjects.files.each { File f ->
         project(projectName).projectDir = projectFolder
     }
 }
+
+include 'sensorhub-driver-joyconIR'
+project(':sensorhub-driver-joyconIR').projectDir = "$rootDir/sensors/sensorhub-driver-joyconIR" as File
