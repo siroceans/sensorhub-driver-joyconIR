@@ -1,0 +1,47 @@
+description = 'Nintendo Joy Con IR Camera Driver'
+ext.details = "A driver to get images / video from the Infrared camera in the right nintendo joycon."
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.sensorhub:sensorhub-core:' + oshCoreVersion
+//    implementation project(':sensorhub-service-video')
+//    implementation project(':sensorhub-driver-videocam')
+    testImplementation('junit:junit:4.13.1')
+
+    // JNA, HIDPI, and hid4java.
+    implementation 'net.java.dev.jna:jna:5.13.0'
+    implementation 'net.java.dev.jna:jna-platform:5.13.0'
+    implementation('org.hid4java:hid4java:0.8.0')
+}
+
+// exclude tests requiring connection to the sensor
+// these have to be run manually
+//      If tests are to be excluded list them here as follows
+//          exclude '**/TestNameClass.class'
+test {
+    useJUnit()
+}
+
+// add info to OSGi manifest
+osgi {
+    manifest {
+        attributes ('Bundle-Vendor': 'Georobotix Inc.')
+        attributes ('Bundle-Activator': 'com.georobotix.impl.sensor.joyconIR.Activator')
+    }
+}
+
+// add info to maven pom
+ext.pom >>= {
+    developers {
+        developer {
+            id 'siroceans'
+            name 'Jorge Mares'
+            organization 'Georobotix Inc.'
+            organizationUrl ''
+        }
+    }
+}
