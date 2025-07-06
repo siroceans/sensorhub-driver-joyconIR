@@ -363,7 +363,7 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
                          */
 
                         // Data collection and processing.
-                        output.setData(System.currentTimeMillis(), bufImage);
+                        output.setData(bufImage);
                         counter++;
 
                         if (initialization != 0) {

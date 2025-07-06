@@ -19,7 +19,12 @@ import org.vast.data.DataBlockMixed;
 import org.vast.swe.helper.RasterHelper;
 import org.vast.data.AbstractDataBlock;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Output specification and provider for {@link JoyConImageSensor}.
@@ -31,7 +36,7 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
 
     private final int width;
     private final int height;
-    private final String codec = "JPEG";
+    private final String codec = "CODEC_MJPEG";
 
     private static final int MAX_NUM_TIMING_SAMPLES = 10;
 
@@ -65,6 +70,7 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
                 .name(SENSOR_OUTPUT_NAME)
                 .label(SENSOR_OUTPUT_LABEL)
                 .description(SENSOR_OUTPUT_DESCRIPTION)
+                .definition(sweFactory.getPropertyUri("VideoFragme"))
                 .addField("sampleTime", sweFactory.createTime()
                         .asSamplingTimeIsoUTC()
                         .label("Sample Time")
@@ -116,8 +122,27 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
     /**
      * Sets the data for the output and publishes it.
      */
-    public void setData(long timestamp, byte[] imageBuf) {
+    public void setData(byte[] imageBuf) {
         synchronized (processingLock) {
+            long timestamp = System.currentTimeMillis();
+
+            /* Troubleshoot Efforts
+            byte[] imgJpeg = new byte[19*4096];
+            Arrays.fill(imgJpeg, (byte) 0);
+
+            // Convert raw bytes to jpeg format!
+            try {
+                BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+                img.getRaster().setDataElements(0, 0, width, height, imageBuf);
+                ByteArrayOutputStream imgOutput = new ByteArrayOutputStream();
+                ImageIO.write(img, "jpg", imgOutput);
+                imgJpeg = imgOutput.toByteArray();
+            } catch (IOException io) {
+                System.err.println("IO Exception: " + io);
+            }
+             */
+
+
             // Get or renew the data block.
             DataBlock dataBlock = latestRecord == null ? dataRecord.createDataBlock() : latestRecord.renew();
 
@@ -134,7 +159,7 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
             // Publish the data block
             latestRecord = dataBlock;
             latestRecordTime = timestamp;
-            eventHandler.publish(new DataEvent(latestRecordTime, JoyConImageOutput.this, dataBlock));
+            eventHandler.publish(new DataEvent(latestRecordTime, this, dataBlock));
         }
     }
 
