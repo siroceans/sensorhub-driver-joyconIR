@@ -19,6 +19,11 @@ import org.slf4j.LoggerFactory;
 
 // Functional Imports
 import org.hid4java.*;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -264,7 +269,21 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
 
     // ---------------------------------------------------------------------------------------------------------------//
 
-    public byte[] grayscaleToRgb(byte[] grayscaleBuf) {
+    private void saveImage(byte[] imageBuf) {
+        BufferedImage img = new BufferedImage(irImageWidth, irImageHeight, BufferedImage.TYPE_INT_BGR);
+        WritableRaster raster = img.getRaster();
+        raster.setDataElements(0, 0, irImageWidth, irImageHeight, imageBuf);
+        String filename = "image.jpeg";
+
+        try {
+            File output = new File(filename);
+            ImageIO.write(img, "jpeg", output);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private byte[] grayscaleToRgb(byte[] grayscaleBuf) {
         byte[] rgbBuf = new byte[grayscaleBuf.length * 3];
 
         for (int i = 0; i < grayscaleBuf.length; i++) {
@@ -379,6 +398,7 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
 
                         // Change 8bpp grayscale image buffer to a 24bpp rgb one.
                         bufImageRgb = grayscaleToRgb(bufImage);
+                        saveImage(bufImageRgb);
 
                         // Data collection and processing.
                         output.setData(bufImageRgb);
