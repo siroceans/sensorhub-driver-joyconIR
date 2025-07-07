@@ -70,7 +70,7 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
                 .name(SENSOR_OUTPUT_NAME)
                 .label(SENSOR_OUTPUT_LABEL)
                 .description(SENSOR_OUTPUT_DESCRIPTION)
-                .definition(sweFactory.getPropertyUri("VideoFragme"))
+                .definition(sweFactory.getPropertyUri("VideoFrame"))
                 .addField("sampleTime", sweFactory.createTime()
                         .asSamplingTimeIsoUTC()
                         .label("Sample Time")
