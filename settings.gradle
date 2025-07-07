@@ -72,3 +72,6 @@ processProjects.files.each { File f ->
 
 include 'sensorhub-driver-joyconIR'
 project(':sensorhub-driver-joyconIR').projectDir = "$rootDir/sensors/sensorhub-driver-joyconIR" as File
+
+include 'sensorhub-service-video'
+project(':sensorhub-service-video').projectDir = "$serviceDir/sensorhub-service-video" as File
