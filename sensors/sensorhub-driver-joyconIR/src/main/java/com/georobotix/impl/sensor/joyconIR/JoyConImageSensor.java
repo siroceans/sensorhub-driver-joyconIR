@@ -264,10 +264,25 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
 
     // ---------------------------------------------------------------------------------------------------------------//
 
+    public byte[] grayscaleToRgb(byte[] grayscaleBuf) {
+        byte[] rgbBuf = new byte[grayscaleBuf.length * 3];
+
+        for (int i = 0; i < grayscaleBuf.length; i++) {
+            byte grayValue = grayscaleBuf[i];
+
+            // set RGB channels!
+            rgbBuf[i*3] = grayValue;
+            rgbBuf[(i*3) + 1] = grayValue;
+            rgbBuf[(i*3) + 2] = grayValue;
+        }
+        return rgbBuf;
+    }
+
     public void getRawIRImage() throws IOException {
         byte[] packet = new byte[48];
         byte[] bufImage = new byte[19*4096]; // 8bpp greyscale image.
         byte[] reply = new byte[0x170];
+        byte[] bufImageRgb = new byte[bufImage.length * 3];
 
         /*
         int badSignal = 0;
@@ -362,8 +377,11 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
                         String fileName = "frame_" + counter + ".png";
                          */
 
+                        // Change 8bpp grayscale image buffer to a 24bpp rgb one.
+                        bufImageRgb = grayscaleToRgb(bufImage);
+
                         // Data collection and processing.
-                        output.setData(bufImage);
+                        output.setData(bufImageRgb);
                         counter++;
 
                         if (initialization != 0) {
