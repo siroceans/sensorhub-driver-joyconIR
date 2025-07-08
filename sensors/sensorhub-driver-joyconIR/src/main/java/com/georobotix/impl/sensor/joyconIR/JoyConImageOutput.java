@@ -75,7 +75,7 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
                         .asSamplingTimeIsoUTC()
                         .label("Sample Time")
                         .description("Time of data collection"))
-                .addField("img", sweFactory.newGrayscaleImage(width, height, DataType.BYTE))
+                .addField("img", sweFactory.newRgbImage(width, height, DataType.BYTE))
                 .build();
 
         BinaryEncoding dataEnc = sweFactory.newBinaryEncoding(ByteOrder.BIG_ENDIAN, ByteEncoding.RAW);

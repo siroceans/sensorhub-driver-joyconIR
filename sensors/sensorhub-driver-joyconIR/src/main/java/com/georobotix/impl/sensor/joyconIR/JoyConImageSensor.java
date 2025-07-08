@@ -20,6 +20,10 @@ import org.slf4j.LoggerFactory;
 // Functional Imports
 import org.hid4java.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -265,6 +269,32 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
 
     // ---------------------------------------------------------------------------------------------------------------//
 
+    public static byte[] convertRGBToJPEG(byte[] rgbBuffer, int width, int height) throws IOException {
+        // Create BufferedImage in TYPE_3BYTE_BGR (Blue, Green, Red)
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+
+        // Get the underlying byte buffer of the BufferedImage
+        byte[] imageData = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+
+        // Convert RGB to BGR (swap red and blue channels)
+        for (int i = 0; i < width * height; i++) {
+            int r = rgbBuffer[i * 3];
+            int g = rgbBuffer[i * 3 + 1];
+            int b = rgbBuffer[i * 3 + 2];
+
+            imageData[i * 3]     = (byte) b; // B
+            imageData[i * 3 + 1] = (byte) g; // G
+            imageData[i * 3 + 2] = (byte) r; // R
+        }
+
+        // Encode the image to JPEG
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpeg", outputStream);
+
+        return outputStream.toByteArray();
+    }
+
+
     private byte[] grayscaleToRgb(byte[] grayscaleBuf) {
         byte[] rgbBuf = new byte[grayscaleBuf.length * 3];
 
@@ -283,7 +313,8 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
         byte[] packet = new byte[48];
         byte[] bufImage = new byte[19*4096]; // 8bpp greyscale image.
         byte[] reply = new byte[0x170];
-        byte[] bufImageRgb = new byte[bufImage.length * 3];
+        byte[] bufImageRgb;
+        byte[] jpegBufRgb;
 
         /*
         int badSignal = 0;
@@ -380,9 +411,10 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
 
                         // Change 8bpp grayscale image buffer to a 24bpp rgb one.
                         bufImageRgb = grayscaleToRgb(bufImage);
+                        jpegBufRgb = convertRGBToJPEG(bufImageRgb, irImageWidth, irImageHeight);
 
                         // Data collection and processing.
-                        output.setData(bufImage);
+                        output.setData(jpegBufRgb);
                         counter++;
 
                         if (initialization != 0) {
