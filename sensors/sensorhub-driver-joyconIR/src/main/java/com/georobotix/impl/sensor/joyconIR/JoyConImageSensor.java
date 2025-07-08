@@ -382,7 +382,7 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
                         bufImageRgb = grayscaleToRgb(bufImage);
 
                         // Data collection and processing.
-                        output.setData(bufImageRgb);
+                        output.setData(bufImage);
                         counter++;
 
                         if (initialization != 0) {

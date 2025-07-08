@@ -36,7 +36,7 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
 
     private final int width;
     private final int height;
-    private final String codec = "CODEC_MJPEG";
+    private final String codec = "JPEG";
 
     private static final int MAX_NUM_TIMING_SAMPLES = 10;
 
@@ -75,7 +75,7 @@ public class JoyConImageOutput extends AbstractSensorOutput<JoyConImageSensor> {
                         .asSamplingTimeIsoUTC()
                         .label("Sample Time")
                         .description("Time of data collection"))
-                .addField("img", sweFactory.newRgbImage(width, height, DataType.BYTE))
+                .addField("img", sweFactory.newGrayscaleImage(width, height, DataType.BYTE))
                 .build();
 
         BinaryEncoding dataEnc = sweFactory.newBinaryEncoding(ByteOrder.BIG_ENDIAN, ByteEncoding.RAW);
