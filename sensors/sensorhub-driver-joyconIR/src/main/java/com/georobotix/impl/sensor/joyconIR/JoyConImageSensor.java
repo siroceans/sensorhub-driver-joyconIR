@@ -269,20 +269,6 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
 
     // ---------------------------------------------------------------------------------------------------------------//
 
-    private void saveImage(byte[] imageBuf) {
-        BufferedImage img = new BufferedImage(irImageWidth, irImageHeight, BufferedImage.TYPE_INT_BGR);
-        WritableRaster raster = img.getRaster();
-        raster.setDataElements(0, 0, irImageWidth, irImageHeight, imageBuf);
-        String filename = "image.jpeg";
-
-        try {
-            File output = new File(filename);
-            ImageIO.write(img, "jpeg", output);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private byte[] grayscaleToRgb(byte[] grayscaleBuf) {
         byte[] rgbBuf = new byte[grayscaleBuf.length * 3];
 
@@ -398,10 +384,9 @@ public class JoyConImageSensor extends AbstractSensorModule<Config> {
 
                         // Change 8bpp grayscale image buffer to a 24bpp rgb one.
                         bufImageRgb = grayscaleToRgb(bufImage);
-                        saveImage(bufImageRgb);
 
                         // Data collection and processing.
-                        output.setData(bufImageRgb);
+                        output.setData(bufImage);
                         counter++;
 
                         if (initialization != 0) {
